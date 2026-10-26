@@ -1,0 +1,10 @@
+[Unit]
+Description=Every 4 days, sync to the Pi even if PiHub didn't ask
+
+[Timer]
+OnBootSec=1h
+OnUnitActiveSec=4d
+Persistent=true
+
+[Install]
+WantedBy=timers.target

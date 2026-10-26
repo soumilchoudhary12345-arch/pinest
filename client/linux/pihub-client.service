@@ -1,0 +1,11 @@
+[Unit]
+Description=pihub-client - does sync and file-transfer tasks for PiHub
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/env python3 %h/.local/share/pihub/pihub_client.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

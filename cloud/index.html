@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08070a">
+<title>picloud</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M13.5 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M13.5 3.5V9H19"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="9.5" r="1.6"/><path d="m4 17.5 5-5 4 4 2.5-2.5 4.5 4.5"/></symbol>
+    <symbol id="i-audio" viewBox="0 0 24 24"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.8" cy="17.5" r="2.3"/><circle cx="16.8" cy="15.5" r="2.3"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><rect x="3.5" y="6" width="12.5" height="12" rx="2"/><path d="m16 10.5 4.5-2.6v8.2L16 13.5"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.2"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m8.5 8-4 4 4 4M15.5 8l4 4-4 4M13.2 6l-2.4 12"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M13.5 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M13.5 3.5V9H19M8.5 13h7M8.5 16.5h5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 15v2.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V15"/></symbol>
+    <symbol id="i-folder-up" viewBox="0 0 24 24"><path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M12 16.5v-5.5M9.6 13.2 12 10.8l2.4 2.4"/></symbol>
+    <symbol id="i-folder-plus" viewBox="0 0 24 24"><path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h3.6l2 2.2h7.4a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M12 10.8v5.4M9.3 13.5h5.4"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4.5v11M7.5 11l4.5 4.5 4.5-4.5"/><path d="M4.5 18.5h15"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M15.2 5.3a1.9 1.9 0 0 1 2.7 2.7L8.5 17.4l-3.7 1 1-3.7z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l.8 11.2a2 2 0 0 0 2 1.8h5.4a2 2 0 0 0 2-1.8L17.5 7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6 8.5 12l6 6"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 14.5 6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
+    <symbol id="i-sort" viewBox="0 0 24 24"><path d="m8 10 4-4 4 4M8 14l4 4 4-4"/></symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <a class="wordmark" href="#/" aria-label="picloud home">picloud</a>
+  <div class="usage" id="usage" hidden>
+    <div class="usage-bar"><span id="usageFill"></span></div>
+    <span id="usageText"></span>
+  </div>
+</header>
+
+<!-- Pi touchscreen (?pi=1): a tap is the only input -->
+<header class="pibar" id="pibar" hidden>
+  <button class="icon-btn" id="piBack" type="button" aria-label="Up one folder"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg></button>
+  <span class="pi-title" id="piTitle">Home</span>
+  <span class="pi-usage" id="piUsage"></span>
+  <button class="icon-btn" id="quit" type="button" aria-label="Close picloud"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+</header>
+
+<main class="shell">
+  <div class="toolbar">
+    <nav class="crumbs" id="crumbs" aria-label="Folder path"></nav>
+    <div class="tools">
+      <label class="filter">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+        <span class="sr-only">Filter this folder</span>
+        <input id="filter" type="search" placeholder="Filter this folder" autocomplete="off" spellcheck="false">
+      </label>
+      <button class="btn" id="newFolder" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-folder-plus"/></svg><span>New folder</span>
+      </button>
+      <button class="btn" id="pickFolder" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-folder-up"/></svg><span>Upload folder</span>
+      </button>
+      <button class="btn primary" id="pickFiles" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg><span>Upload files</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="table" role="table" aria-label="Files">
+    <div class="thead" role="rowgroup">
+      <div class="tr" role="row">
+        <div class="th c-name" role="columnheader"><button type="button" data-sort="name">Name<svg class="icon" aria-hidden="true"><use href="#i-sort"/></svg></button></div>
+        <div class="th c-size" role="columnheader"><button type="button" data-sort="size">Size<svg class="icon" aria-hidden="true"><use href="#i-sort"/></svg></button></div>
+        <div class="th c-date" role="columnheader"><button type="button" data-sort="mtime">Modified<svg class="icon" aria-hidden="true"><use href="#i-sort"/></svg></button></div>
+        <div class="th c-act" role="columnheader"><span class="sr-only">Actions</span></div>
+      </div>
+    </div>
+    <div class="tbody" id="rows" role="rowgroup"></div>
+  </div>
+  <p class="summary" id="summary"></p>
+</main>
+
+<div class="pager" id="pager" hidden>
+  <button class="icon-btn" id="pgUp" type="button" aria-label="Previous page"><svg class="icon" aria-hidden="true"><use href="#i-up"/></svg></button>
+  <span class="pg-num" id="pgNum"></span>
+  <button class="icon-btn" id="pgDown" type="button" aria-label="Next page"><svg class="icon" aria-hidden="true"><use href="#i-down"/></svg></button>
+</div>
+
+<section class="viewer" id="viewer" hidden aria-label="File viewer">
+  <header class="viewer-bar">
+    <span class="viewer-name" id="viewerName"></span>
+    <button class="icon-btn" id="viewerClose" type="button" aria-label="Close file"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </header>
+  <div class="viewer-body" id="viewerBody"></div>
+  <button class="icon-btn v-side v-prev" id="vPrev" type="button" aria-label="Previous photo" hidden><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg></button>
+  <button class="icon-btn v-side v-next" id="vNext" type="button" aria-label="Next photo" hidden><svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></button>
+  <div class="v-scroll" id="vScroll" hidden>
+    <button class="icon-btn" id="vUp" type="button" aria-label="Scroll up"><svg class="icon" aria-hidden="true"><use href="#i-up"/></svg></button>
+    <button class="icon-btn" id="vDown" type="button" aria-label="Scroll down"><svg class="icon" aria-hidden="true"><use href="#i-down"/></svg></button>
+  </div>
+</section>
+
+<input type="file" id="fileInput" multiple hidden>
+<input type="file" id="folderInput" webkitdirectory hidden>
+
+<div class="dropzone" id="dropzone" hidden>
+  <div class="dropzone-card">
+    <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>
+    <p>Drop to upload into <b id="dropTarget">Home</b></p>
+  </div>
+</div>
+
+<section class="tray" id="tray" hidden aria-label="Uploads">
+  <header class="tray-head"><span id="trayTitle">Uploading</span>
+    <button class="icon-btn" id="trayClose" type="button" aria-label="Hide uploads"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </header>
+  <ul class="tray-list" id="trayList"></ul>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/app.js"></script>
+</body>
+</html>

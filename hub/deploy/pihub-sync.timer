@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily 02:00 PiHub sync round check
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target

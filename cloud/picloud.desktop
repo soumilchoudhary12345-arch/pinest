@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=picloud
+GenericName=File cloud
+Comment=Your files on the Pi
+Exec=chromium --kiosk --app=http://localhost/?pi=1 --class=picloud --disable-gpu --password-store=basic
+Icon=/home/som/.local/share/icons/picloud.png
+Terminal=false
+Categories=System;FileTools;FileManager;
+StartupWMClass=picloud

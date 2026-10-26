@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Agents
+GenericName=Agent monitor
+Comment=See what the coding agents on each PC are doing, live
+Exec=chromium --kiosk "--app=http://localhost:8899/pi#token=__PIHUB_TOKEN__" --class=Agents --disable-gpu --password-store=basic
+Icon=/home/som/.local/share/icons/agents.png
+Terminal=false
+Categories=Utility;Monitor;
+StartupWMClass=Agents

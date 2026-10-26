@@ -1,0 +1,6 @@
+[Unit]
+Description=pihub fallback sync (runs if the Pi hasn't triggered one)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env python3 %h/.local/share/pihub/pihub_client.py --sync-now

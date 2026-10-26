@@ -1,0 +1,18 @@
+[Unit]
+Description=Musik music library streamer
+After=network-online.target local-fs.target
+Wants=network-online.target
+
+[Service]
+User=som
+Group=som
+WorkingDirectory=/home/som/musicapp
+Environment=MUSIC_ROOT=/srv/nas/music
+Environment=MUSIK_DB=/home/som/.local/state/musik/library.db
+Environment=PLAYER_PORT=8080
+ExecStart=/usr/bin/python3 /home/som/musicapp/app.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=picloud web file cloud
+After=network-online.target local-fs.target
+Wants=network-online.target
+
+[Service]
+User=som
+Group=som
+WorkingDirectory=/home/som/cloudapp
+Environment=CLOUD_ROOT=/srv/nas
+Environment=CLOUD_PORT=80
+ExecStart=/usr/bin/python3 /home/som/cloudapp/app.py
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

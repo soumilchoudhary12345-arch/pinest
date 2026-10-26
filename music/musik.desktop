@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Musik
+GenericName=Music player
+Comment=Your music library on the Pi
+Exec=chromium --kiosk --app=http://localhost:8080/?pi=1 --class=Musik --disable-gpu --password-store=basic
+Icon=/home/som/.local/share/icons/musik.png
+Terminal=false
+Categories=AudioVideo;Audio;Player;
+StartupWMClass=Musik

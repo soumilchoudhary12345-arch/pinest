@@ -1,0 +1,10 @@
+[Unit]
+Description=PiHub sync round check (queues a sync for every PC if 4 days have passed)
+After=pihub.service
+Requires=pihub.service
+
+[Service]
+Type=oneshot
+User=som
+EnvironmentFile=/etc/pihub.env
+ExecStart=/bin/sh -c 'curl -fsS -X POST -H "X-Token: $PIHUB_TOKEN" -H "Content-Type: application/json" -d "{}" http://127.0.0.1:${PIHUB_PORT:-8899}/api/sync-round'

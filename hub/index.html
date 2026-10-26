@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08070a">
+<title>PiHub</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-pc" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="11" rx="1.8"/><path d="M8 19.5h8M12 15.5v4"/></symbol>
+    <symbol id="i-sync" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 0 1-12.9 5.2M4.5 12a7.5 7.5 0 0 1 12.9-5.2"/><path d="M17.8 3.8v3.4h-3.4M6.2 20.2v-3.4h3.4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4.5v11M7.5 11l4.5 4.5 4.5-4.5"/><path d="M4.5 18.5h15"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h15M14 6.5l5.5 5.5-5.5 5.5"/></symbol>
+    <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4.5" y="7.5" width="15" height="11" rx="3"/><path d="M12 4v3.5M9 12.5v1M15 12.5v1"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <a class="wordmark" href="/">PiHub</a>
+  <nav class="tabs" id="tabs" aria-label="Sections">
+    <button type="button" data-tab="overview" aria-pressed="true">Overview</button>
+    <button type="button" data-tab="search" aria-pressed="false">Search</button>
+    <button type="button" data-tab="agents" aria-pressed="false">Agents</button>
+  </nav>
+  <span class="disk" id="disk"></span>
+</header>
+
+<main class="shell">
+  <form class="gate" id="gate" hidden>
+    <h1>Enter the PiHub token</h1>
+    <p>It’s the <code>PIHUB_TOKEN</code> line in <code>/etc/pihub.env</code> on the Pi. This browser remembers it.</p>
+    <div class="gate-row">
+      <label class="sr-only" for="tokenInput">Token</label>
+      <input id="tokenInput" type="password" autocomplete="off" spellcheck="false" placeholder="Token">
+      <button class="btn primary" type="submit">Unlock</button>
+    </div>
+    <p class="err" id="gateErr" role="alert"></p>
+  </form>
+
+  <section id="tab-overview" class="tab">
+    <div class="sect-head">
+      <h2>Computers</h2>
+      <button class="btn" type="button" id="syncAll"><svg class="icon" aria-hidden="true"><use href="#i-sync"/></svg>Sync all now</button>
+    </div>
+    <p class="sub" id="roundLine"></p>
+    <div id="devices" class="devices"></div>
+
+    <div class="sect-head"><h2>Transfers and syncs</h2></div>
+    <div id="tasks" class="tasks"></div>
+  </section>
+
+  <section id="tab-search" class="tab" hidden>
+    <label class="searchbox">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+      <span class="sr-only">Search every computer</span>
+      <input id="q" type="search" placeholder="Search every computer’s files" autocomplete="off" spellcheck="false">
+    </label>
+    <div id="results" class="results"></div>
+  </section>
+
+  <section id="tab-agents" class="tab" hidden>
+    <div class="sect-head"><h2>Agents</h2><span class="sub" id="agentsLine"></span></div>
+    <div id="agents" class="agents"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/app.js"></script>
+</body>
+</html>
