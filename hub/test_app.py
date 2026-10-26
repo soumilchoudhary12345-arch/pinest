@@ -152,10 +152,11 @@ class Join(unittest.TestCase):
         for key, names in app.JOIN_SCRIPTS.items():
             text = open(app.find(*names), encoding="utf-8").read()
             if key.endswith(".cmd"):  # runs straight from a clone: real default address, no token
-                self.assertIn("http://192.168.1.13:8899", text)
+                self.assertIn("http://piscreen.local:8899", text)
                 self.assertNotIn("__PIHUB_TOKEN__", text)
             else:
                 self.assertIn("__PIHUB_URL__", text)
+                self.assertIn("__PIHUB_FALLBACK_URL__", text)
                 self.assertIn("__PIHUB_TOKEN__", text)
         for names in app.JOIN_FILES.values():
             self.assertTrue(os.path.isfile(app.find(*names)), names)

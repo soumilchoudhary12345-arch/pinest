@@ -51,7 +51,8 @@ def find(*names):
             if os.path.isfile(p):
                 return p
     return os.path.join(HERE, names[0])
-PUBLIC_URL = os.environ.get("PIHUB_PUBLIC_URL", "http://192.168.1.13:8899")
+# The Pi's name (mDNS), so PCs keep finding it when it moves to another network or gets a new IP.
+PUBLIC_URL = os.environ.get("PIHUB_PUBLIC_URL", "http://piscreen.local:8899")
 ST_URL = os.environ.get("PIHUB_ST_URL", "http://127.0.0.1:8384")
 ST_CONFIG = os.environ.get("PIHUB_ST_CONFIG", os.path.expanduser("~/.local/state/syncthing/config.xml"))
 CHUNK = 1 << 16
@@ -771,8 +772,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def _join(self, name):
         if name in JOIN_SCRIPTS:
+            # Fallback: the address this PC just used to reach the Pi, for PCs that can't resolve .local names.
+            host = self.headers.get("Host", "")
+            fallback = "http://" + host if re.match(r"^[A-Za-z0-9.\-]+:\d+$", host) else PUBLIC_URL
             with open(find(*JOIN_SCRIPTS[name]), encoding="utf-8") as f:
-                text = f.read().replace("__PIHUB_URL__", PUBLIC_URL).replace("__PIHUB_TOKEN__", TOKEN)
+                text = (f.read().replace("__PIHUB_URL__", PUBLIC_URL).replace("__PIHUB_FALLBACK_URL__", fallback)
+                        .replace("__PIHUB_TOKEN__", TOKEN))
             if name.endswith(".ps1"):
                 text = text.replace("\r\n", "\n").replace("\n", "\r\n")
             return self._send(200, "text/plain; charset=utf-8", text.encode("utf-8"))

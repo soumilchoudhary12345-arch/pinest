@@ -8,7 +8,8 @@
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
-$Hub = "__PIHUB_URL__"
+$Hub = "__PIHUB_URL__"                    # the Pi by name, so a new IP or network doesn't matter
+$HubFallback = "__PIHUB_FALLBACK_URL__"   # the address this PC fetched the script from
 $Token = "__PIHUB_TOKEN__"
 $Headers = @{ "X-Token" = $Token }
 $App = Join-Path $env:LOCALAPPDATA "pihub"
@@ -36,7 +37,12 @@ function Find-Python {
 
 Say "1/7 Checking the Pi at $Hub"
 try { Invoke-RestMethod "$Hub/api/overview" -Headers $Headers -TimeoutSec 5 | Out-Null }
-catch { Die "Can't reach PiHub. Is this PC on the same Wi-Fi as the Pi?" }
+catch {
+  Write-Host "Can't resolve $Hub; using $HubFallback"
+  $Hub = $HubFallback
+  try { Invoke-RestMethod "$Hub/api/overview" -Headers $Headers -TimeoutSec 5 | Out-Null }
+  catch { Die "Can't reach PiHub. Is this PC on the same network as the Pi?" }
+}
 
 Say "2/7 Installing Python and Syncthing if they're missing"
 $hasWinget = [bool](Get-Command winget -ErrorAction SilentlyContinue)

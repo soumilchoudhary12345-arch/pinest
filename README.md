@@ -32,7 +32,10 @@ all on the home LAN with no cloud service and only Python's standard library on 
 
 * **Pull-based:** the Pi never pushes to a PC. PCs poll `/api/tasks`, so firewalls and sleeping laptops don't matter.
 * **One-way mirrors:** PC folders are Send Only, the Pi is Receive Only with 30-day versioning.
-* **LAN-only:** the Pi's firewall (ufw) accepts the home subnet only; every API call needs the PiHub token.
+* **LAN-only:** the Pi's firewall (ufw) accepts private LAN ranges only; every API call needs the PiHub token.
+* **Any network:** the Pi takes its address from the router (DHCP) and PCs find it as `piscreen.local`. To move it,
+  plug in Ethernet (Wi-Fi: connect it once with `nmcli dev wifi connect <name> password <pw>`). Run
+  `hub/setup/portable-network.sh` once with sudo to open the firewall to every private range.
 
 ## Join a PC
 

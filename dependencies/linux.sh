@@ -6,7 +6,8 @@
 # Safe to run again: it keeps an existing config and only adds what's missing.
 set -euo pipefail
 
-HUB="__PIHUB_URL__"
+HUB="__PIHUB_URL__"                 # the Pi by name (piscreen.local), so a new IP or network doesn't matter
+HUB_FALLBACK="__PIHUB_FALLBACK_URL__"  # the address this PC fetched the script from
 TOKEN="__PIHUB_TOKEN__"
 DEVICE="${1:-}"
 APP="$HOME/.local/share/pihub"
@@ -22,8 +23,12 @@ die() { printf '\033[1;31mError: %s\033[0m\n' "$*" >&2; exit 1; }
 
 say "1/7 Checking the Pi at $HUB"
 command -v curl >/dev/null || die "curl is missing. Install it, then run this again."
-curl -fsS -m 5 -H "X-Token: $TOKEN" "$HUB/api/overview" >/dev/null \
-  || die "Can't reach PiHub. Is this PC on the same Wi-Fi as the Pi?"
+if ! curl -fsS -m 5 -H "X-Token: $TOKEN" "$HUB/api/overview" >/dev/null 2>&1; then
+  echo "This PC can't resolve ${HUB#http://} (install nss-mdns for .local names); using $HUB_FALLBACK"
+  HUB="$HUB_FALLBACK"
+  curl -fsS -m 5 -H "X-Token: $TOKEN" "$HUB/api/overview" >/dev/null \
+    || die "Can't reach PiHub. Is this PC on the same network as the Pi?"
+fi
 
 say "2/7 Installing python3 and syncthing if they're missing"
 need=()

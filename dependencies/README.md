@@ -15,8 +15,9 @@ Optional device name: `join-pi.cmd my_pc` / `bash join-pi.cmd my_laptop`. Withou
 names the PC `<user>_<os>` (for example `soumil_linux`, `soumil_win`), adding a number only for a
 duplicate (`soumil_win_2`). The name is tied to the machine ID, so running it again keeps it.
 
-If the Pi isn't at `192.168.1.13`, set `PIHUB_URL` first, e.g. `PIHUB_URL=http://10.0.0.5:8899 bash join-pi.cmd`
-(Windows: `set PIHUB_URL=http://10.0.0.5:8899` in cmd, then run it).
+**Any network:** the Pi is found by name, `piscreen.local` (mDNS), so it keeps working when the Pi
+moves to another router or gets a new IP. `join-pi.cmd` tries `PIHUB_URL` (if you set one), then
+`piscreen.local`, then `192.168.1.13`. Override example: `PIHUB_URL=http://10.0.0.5:8899 bash join-pi.cmd`.
 
 ## What the installer does
 
@@ -24,7 +25,7 @@ If the Pi isn't at `192.168.1.13`, set `PIHUB_URL` first, e.g. `PIHUB_URL=http:/
 2. Installs Python 3 and Syncthing if missing (pacman / apt / dnf / zypper, or winget).
 3. Downloads the client files from the Pi and writes `client.json` (device name, hub URL, token).
 4. Starts Syncthing and pihub-client now and at every login (systemd user units / Task Scheduler), plus a 4-day fallback sync.
-5. Pairs Syncthing with the Pi through PiHub's `/api/pair` (no SSH login).
+5. Pairs Syncthing with the Pi through PiHub's `/api/pair` (no SSH login). Synced: Documents, Desktop, **Downloads**, Pictures, Videos.
 6. Connects every installed coding agent to the monitor (`agents/connect_agents.py`).
 7. Adds a **Pi Agents** app that opens the live agent monitor.
 

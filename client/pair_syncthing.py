@@ -25,14 +25,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path[:0] = [HERE, os.path.join(HERE, "..", "client")]  # installed next to pihub_client.py, or in the repo
 from pihub_client import config_path, load_config  # noqa: E402
 
-PI_ADDR = os.environ.get("PI_ADDR", "tcp://192.168.1.13:22000")
+# By name, so the pairing survives the Pi changing network or IP; "dynamic" adds LAN discovery on top.
+PI_ADDR = os.environ.get("PI_ADDR", "tcp://piscreen.local:22000")
 ST = "http://127.0.0.1:8384"
 
 
 def folders():
     """(name the Pi knows, local path) for each standard folder this PC has."""
     home = os.path.expanduser("~")
-    out = [(n, os.path.join(home, n)) for n in ("Documents", "Desktop", "Pictures", "Videos")]
+    out = [(n, os.path.join(home, n)) for n in ("Documents", "Desktop", "Downloads", "Pictures", "Videos")]
     out.append(("OmaOpus", os.path.join(home, "Music", "OmaOpus")))
     return [(n, p) for n, p in out if os.path.isdir(p)]
 
