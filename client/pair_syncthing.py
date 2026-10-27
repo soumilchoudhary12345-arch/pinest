@@ -98,7 +98,10 @@ def main():
     raw.setdefault("syncthing", {}).update({"url": ST, "api_key": key, "pi_device_id": pi_id})
     with open(cfg_file, "w", encoding="utf-8") as f:
         json.dump(raw, f, indent=2)
-    print("Done. The Pi is paused until PiHub's next round; press 'Sync now' on the dashboard to test.")
+    # First backup right away instead of waiting for the next 4-day round. Asked for last, so the
+    # folders above already exist when pihub-client picks the task up (within ~10 s).
+    hub(cfg, "/api/sync-now", {"device": device})
+    print("Done. First backup started: watch it on the Pi's Agents screen or the PiHub dashboard.")
 
 
 if __name__ == "__main__":

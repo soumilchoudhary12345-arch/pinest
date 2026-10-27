@@ -25,7 +25,7 @@ moves to another router or gets a new IP. `join-pi.cmd` tries `PIHUB_URL` (if yo
 2. Installs Python 3 and Syncthing if missing (pacman / apt / dnf / zypper, or winget).
 3. Downloads the client files from the Pi and writes `client.json` (device name, hub URL, token).
 4. Starts Syncthing and pihub-client now and at every login (systemd user units / Task Scheduler), plus a 4-day fallback sync.
-5. Pairs Syncthing with the Pi through PiHub's `/api/pair` (no SSH login). Synced: Documents, Desktop, **Downloads**, Pictures, Videos.
+5. Pairs Syncthing with the Pi through PiHub's `/api/pair` (no SSH login) and **starts the first backup at once** (Documents, Desktop, Downloads, Pictures, Videos); watch it live on the Pi's Agents screen.
 6. Connects every installed coding agent to the monitor (`agents/connect_agents.py`).
 7. Adds a **Pi Agents** app that opens the live agent monitor.
 

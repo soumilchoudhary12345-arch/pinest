@@ -246,6 +246,7 @@ class Syncthing:
 def do_sync(cfg, hub, t):
     hub.report(t["id"], "running")
     try:
+        cfg = load_config()  # re-read: pairing writes the Syncthing keys after this client started
         items, nbytes = Syncthing(cfg).run_sync(live=cfg.get("live_folders") or ())
         hub.report(t["id"], "done", files=items, bytes=nbytes, note="Synced %d items (%d bytes)." % (items, nbytes))
         log("sync done:", items, "items")
