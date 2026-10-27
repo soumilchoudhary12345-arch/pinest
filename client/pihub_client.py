@@ -166,8 +166,35 @@ class Syncthing:
             raw = r.read()
             return json.loads(raw) if raw.strip() else {}
 
-    def run_sync(self, deadline_s=7200):
-        """Resume, rescan, wait until the Pi needs nothing from us, pause. Returns (items, bytes)."""
+    def patch_folder(self, fid, body):
+        req = urllib.request.Request(self.url + "/rest/config/folders/" + urllib.parse.quote(fid), method="PATCH",
+                                     data=json.dumps(body).encode(),
+                                     headers={"X-API-Key": self.key, "Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=15).read()
+
+    def pi_folders(self):
+        return [f["id"] for f in self.call("GET", "/rest/config/folders")
+                if any(d["deviceID"] == self.pi for d in f.get("devices", []))]
+
+    def apply_live(self, live, rescan_s):
+        """Live mode (client.json "live_folders"): those folders sync all the time, every `rescan_s`
+        seconds plus on file changes; the rest stay paused until a sync round. The link to the Pi
+        stays up, so pausing happens per folder instead of per device."""
+        for fid in self.pi_folders():
+            if fid in live:
+                self.patch_folder(fid, {"paused": False, "rescanIntervalS": rescan_s, "fsWatcherEnabled": True,
+                                        "fsWatcherDelayS": 2})
+            else:
+                self.patch_folder(fid, {"paused": True})
+        self.call("POST", "/rest/system/resume?device=" + self.pi)
+
+    def run_sync(self, deadline_s=7200, live=()):
+        """Resume, rescan, wait until the Pi needs nothing from us, pause. Returns (items, bytes).
+
+        With live folders, the round un-pauses the other folders instead of the whole device."""
+        others = [f for f in self.pi_folders() if f not in live] if live else []
+        for fid in others:
+            self.patch_folder(fid, {"paused": False})
         self.call("POST", "/rest/system/resume?device=" + self.pi)
         try:
             self.call("POST", "/rest/db/scan")
@@ -192,7 +219,11 @@ class Syncthing:
                 time.sleep(10)
         finally:
             try:
-                self.call("POST", "/rest/system/pause?device=" + self.pi)
+                if live:
+                    for fid in others:
+                        self.patch_folder(fid, {"paused": True})
+                else:
+                    self.call("POST", "/rest/system/pause?device=" + self.pi)
             except Exception as e:
                 log("could not pause syncthing:", e)
 
@@ -202,7 +233,7 @@ class Syncthing:
 def do_sync(cfg, hub, t):
     hub.report(t["id"], "running")
     try:
-        items, nbytes = Syncthing(cfg).run_sync()
+        items, nbytes = Syncthing(cfg).run_sync(live=cfg.get("live_folders") or ())
         hub.report(t["id"], "done", files=items, bytes=nbytes, note="Synced %d items (%d bytes)." % (items, nbytes))
         log("sync done:", items, "items")
     except Exception as e:
@@ -291,12 +322,18 @@ def main(argv):
             print("refused:", e)
         return
     if "--sync-now" in argv:
-        items, nbytes = Syncthing(cfg).run_sync()
+        items, nbytes = Syncthing(cfg).run_sync(live=cfg.get("live_folders") or ())
         log("local sync done:", items, "items,", nbytes, "bytes")
         return
     if "--once" in argv:
         log("tasks:", poll(cfg, hub, wait=True))
         return
+    if cfg.get("live_folders"):
+        try:
+            Syncthing(cfg).apply_live(cfg["live_folders"], int(cfg.get("live_rescan_seconds", 20)))
+            log("live folders (every %ss):" % cfg.get("live_rescan_seconds", 20), ", ".join(cfg["live_folders"]))
+        except Exception as e:
+            log("could not set up live folders:", e)
     log("pihub-client for %s polling %s every %ss" % (cfg["device"], cfg["hub_url"], cfg["poll_seconds"]))
     backoff = cfg["poll_seconds"]
     while True:

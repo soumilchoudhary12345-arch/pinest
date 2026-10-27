@@ -26,7 +26,8 @@ DB_PATH = os.path.expanduser(
     os.environ.get("MUSIK_DB", "~/.local/state/musik/library.db"))
 PORT = int(os.environ.get("PLAYER_PORT") or os.environ.get("PORT") or "8080")
 BIND = os.environ.get("PLAYER_BIND", "0.0.0.0")
-SCAN_INTERVAL = int(os.environ.get("SCAN_INTERVAL", "600"))
+# 20 s: new songs synced live from a PC (OmaOpus) show up almost at once; the scan only reads changed files.
+SCAN_INTERVAL = int(os.environ.get("SCAN_INTERVAL", "20"))
 CHUNK = 1 << 16
 MAX_BODY = 4096
 
