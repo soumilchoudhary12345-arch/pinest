@@ -9,10 +9,10 @@
 :; f="$(mktemp)"; trap 'rm -f "$f"' EXIT
 :; get() { if command -v curl >/dev/null; then curl -fsSL -m 8 "$1" -o "$f"; else wget -qO "$f" -T 8 "$1"; fi; }
 :; HUB=""; for h in ${PIHUB_URL:-} http://piscreen.local:8899 http://192.168.1.13:8899; do if get "$h/join/linux.sh" 2>/dev/null; then HUB="$h"; break; fi; done
-:; [ -n "$HUB" ] || { echo "Can't find the Pi (tried piscreen.local and 192.168.1.13). Same network? Or set PIHUB_URL." >&2; exit 1; }
+:; [ -n "$HUB" ] || { echo "Can't find the Pi (tried piscreen.local and 192.168.1.13). Is it on the same Wi-Fi as this PC? If it just moved to this network, run once on the Pi: sudo bash ~/pihub/setup/portable-network.sh" >&2; exit 1; }
 :; bash "$f" "$@"; exit $?
 @echo off
 if not "%~1"=="" set "PIHUB_DEVICE=%~1"
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$u = @($env:PIHUB_URL, 'http://piscreen.local:8899', 'http://192.168.1.13:8899') | Where-Object { $_ }; foreach ($h in $u) { try { $s = irm ($h + '/join/windows.ps1') -TimeoutSec 8; break } catch {} }; if (-not $s) { Write-Host 'Cannot find the Pi (tried piscreen.local and 192.168.1.13). Same network? Or set PIHUB_URL.' -ForegroundColor Red } else { iex $s }"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$u = @($env:PIHUB_URL, 'http://piscreen.local:8899', 'http://192.168.1.13:8899') | Where-Object { $_ }; foreach ($h in $u) { try { $s = irm ($h + '/join/windows.ps1') -TimeoutSec 8; break } catch {} }; if (-not $s) { Write-Host 'Cannot find the Pi (tried piscreen.local and 192.168.1.13). Is it on the same Wi-Fi as this PC? If it just moved to this network, run once on the Pi: sudo bash ~/pihub/setup/portable-network.sh' -ForegroundColor Red } else { iex $s }"
 echo.
 pause
