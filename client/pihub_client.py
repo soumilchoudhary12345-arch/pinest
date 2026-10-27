@@ -189,14 +189,16 @@ class Syncthing:
         return [f["id"] for f in self.call("GET", "/rest/config/folders")
                 if any(d["deviceID"] == self.pi for d in f.get("devices", []))]
 
-    def apply_live(self, live, rescan_s):
+    def apply_live(self, live, rescan_s, watch=True, two_way=()):
         """Live mode (client.json "live_folders"): those folders sync all the time, every `rescan_s`
-        seconds plus on file changes; the rest stay paused until a sync round. The link to the Pi
-        stays up, so pausing happens per folder instead of per device."""
+        seconds (plus on file changes if `watch`); the rest stay paused until a sync round. The link
+        to the Pi stays up, so pausing happens per folder instead of per device. Folders in `two_way`
+        ("two_way_folders") also take changes from the Pi (Send & Receive)."""
         for fid in self.pi_folders():
             if fid in live:
-                self.patch_folder(fid, {"paused": False, "rescanIntervalS": rescan_s, "fsWatcherEnabled": True,
-                                        "fsWatcherDelayS": 2})
+                self.patch_folder(fid, {"paused": False, "rescanIntervalS": rescan_s, "fsWatcherEnabled": watch,
+                                        "fsWatcherDelayS": 2,
+                                        "type": "sendreceive" if fid in two_way else "sendonly"})
             else:
                 self.patch_folder(fid, {"paused": True})
         self.call("POST", "/rest/system/resume?device=" + self.pi)
@@ -344,7 +346,8 @@ def main(argv):
         return
     if cfg.get("live_folders"):
         try:
-            Syncthing(cfg).apply_live(cfg["live_folders"], int(cfg.get("live_rescan_seconds", 20)))
+            Syncthing(cfg).apply_live(cfg["live_folders"], int(cfg.get("live_rescan_seconds", 20)),
+                                      watch=bool(cfg.get("live_watch", True)), two_way=cfg.get("two_way_folders") or ())
             log("live folders (every %ss):" % cfg.get("live_rescan_seconds", 20), ", ".join(cfg["live_folders"]))
         except Exception as e:
             log("could not set up live folders:", e)

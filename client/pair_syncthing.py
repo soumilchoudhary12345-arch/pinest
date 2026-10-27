@@ -87,9 +87,11 @@ def main():
 
     st("PUT", "/rest/config/devices/" + pi_id, key,
        {"deviceID": pi_id, "name": "pi (picloud)", "addresses": [PI_ADDR, "dynamic"], "paused": True})
+    existing = {f["id"]: f for f in st("GET", "/rest/config/folders", key)}
     for (fid, label), (_, path) in zip(r["folders"], fl):
         st("PUT", "/rest/config/folders/" + fid, key, {
-            "id": fid, "label": label, "path": path, "type": "sendonly",
+            # keep a folder's type if it was made two-way on purpose (music)
+            "id": fid, "label": label, "path": path, "type": existing.get(fid, {}).get("type", "sendonly"),
             "devices": [{"deviceID": my_id}, {"deviceID": pi_id}],
             "rescanIntervalS": 3600, "fsWatcherEnabled": True})
 

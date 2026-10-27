@@ -549,14 +549,15 @@ def pair_device(body):
         st("PUT", "/rest/config/devices/" + pc_id, {"deviceID": pc_id, "name": device, "addresses": ["dynamic"]})
         for fid, label, path in folders:
             os.makedirs(path, exist_ok=True)
-            # Keep devices already on a shared folder (OmaOpus can come from several PCs).
+            # Keep devices already on a shared folder (OmaOpus can come from several PCs), and keep
+            # its type if it was switched to two-way on purpose (music: Send & Receive).
             try:
-                devs = st("GET", "/rest/config/folders/" + fid).get("devices", [])
+                old = st("GET", "/rest/config/folders/" + fid)
             except urllib.error.HTTPError:
-                devs = []
-            ids = {d["deviceID"] for d in devs} | {me, pc_id}
+                old = {}
+            ids = {d["deviceID"] for d in old.get("devices", [])} | {me, pc_id}
             st("PUT", "/rest/config/folders/" + fid, {
-                "id": fid, "label": label, "path": path, "type": "receiveonly",
+                "id": fid, "label": label, "path": path, "type": old.get("type", "receiveonly"),
                 "devices": [{"deviceID": i} for i in sorted(ids)],
                 "versioning": {"type": "staggered", "params": {"maxAge": "2592000", "cleanInterval": "3600"}},
                 "rescanIntervalS": 3600, "fsWatcherEnabled": False})
