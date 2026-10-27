@@ -15,6 +15,7 @@ Usage:
 import http.client
 import json
 import os
+import socket
 import sys
 import threading
 import time
@@ -25,6 +26,18 @@ import urllib.request
 
 CHUNK = 1 << 16
 DEFAULT_DENY = [".ssh", ".gnupg", ".env", "API Keys.md", "id_rsa", "id_ed25519", ".password-store", "Cookies"]
+
+
+# Try IPv4 first. The Pi only accepts LAN connections, so its public IPv6 address (which mDNS
+# or a cache can still hand out) is always dropped, and trying it first stalls every request.
+_getaddrinfo = socket.getaddrinfo
+
+
+def _ipv4_first(*args, **kwargs):
+    return sorted(_getaddrinfo(*args, **kwargs), key=lambda r: r[0] != socket.AF_INET)
+
+
+socket.getaddrinfo = _ipv4_first
 
 
 def config_path():
