@@ -12,6 +12,7 @@ if (hashToken) {
 }
 var tab = location.pathname === "/agents" ? "agents" : "overview";
 var timer = null;
+var stream = null, streamT = null;  // live push from /api/stream on the Agents tab
 
 function esc(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -76,8 +77,17 @@ function setTab(t) {
   document.querySelectorAll(".tab").forEach(function (s) { s.hidden = s.id !== "tab-" + t; });
   history.replaceState(null, "", t === "agents" ? "/agents" : "/");
   clearInterval(timer);
+  if (stream) { stream.close(); stream = null; }
   if (t === "overview") { loadOverview(); timer = setInterval(loadOverview, 10000); }
-  if (t === "agents") { loadAgents(); timer = setInterval(loadAgents, 2000); }
+  if (t === "agents") {
+    loadAgents();
+    timer = setInterval(loadAgents, 2000);
+    // Live push: redraw as soon as an agent does something, not on the next 2 s tick.
+    if (window.EventSource) {
+      stream = new EventSource("/api/stream?token=" + encodeURIComponent(token));
+      stream.onmessage = function () { clearTimeout(streamT); streamT = setTimeout(loadAgents, 80); };
+    }
+  }
   if (t === "search") $("q").focus();
 }
 $("tabs").addEventListener("click", function (e) {

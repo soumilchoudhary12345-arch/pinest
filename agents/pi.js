@@ -56,9 +56,28 @@ function api(path) {
 }
 
 // ---------- data ----------
+// load() fetches and draws once; refresh() is the 2 s polling loop; the push stream calls load()
+// the moment an agent does something, so changes show in well under a second.
 function refresh() {
-  if (!token) return renderNoToken();
-  Promise.all([api("/api/overview"), api("/api/agents")]).then(function (res) {
+  load().then(function () {
+    setTimeout(refresh, failures ? Math.min(10000, REFRESH_MS * (failures + 1)) : REFRESH_MS);
+  });
+}
+
+var pushT = null;
+function listen() {
+  if (!token || !window.EventSource) return;
+  var es = new EventSource("/api/stream?token=" + encodeURIComponent(token));
+  es.onmessage = function () {
+    clearTimeout(pushT);
+    pushT = setTimeout(load, 80);  // several hook events often land together; draw once
+  };
+  // EventSource reconnects on its own (retry: 3 s); polling keeps the screen current meanwhile.
+}
+
+function load() {
+  if (!token) { renderNoToken(); return Promise.resolve(); }
+  return Promise.all([api("/api/overview"), api("/api/agents")]).then(function (res) {
     failures = 0;
     data = { devices: res[0].devices, sessions: res[1].sessions };
     var names = data.devices.map(function (d) { return d.name; });
@@ -79,8 +98,6 @@ function refresh() {
     failures++;
     setLive(false);
     if (!data) renderOffline();
-  }).then(function () {
-    setTimeout(refresh, failures ? Math.min(10000, REFRESH_MS * (failures + 1)) : REFRESH_MS);
   });
 }
 
@@ -218,3 +235,4 @@ $("pgUp").addEventListener("click", function () { view.scrollTop -= pageSize(); 
 $("pgDown").addEventListener("click", function () { view.scrollTop += pageSize(); paintPager(); });
 
 refresh();
+listen();

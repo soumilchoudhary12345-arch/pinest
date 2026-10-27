@@ -173,6 +173,7 @@ def register_device(body):
             n += 1
             name = "%s_%d" % (base, n)
         c.execute("INSERT INTO devices(name, last_seen, machine) VALUES (?, ?, ?)", (name, now(), machine))
+    notify()
     return {"device": name, "new": True}
 
 
@@ -376,6 +377,19 @@ def housekeeping_loop():
 
 # ---------- agent monitor ----------
 
+# ---------- live push ----------
+# Screens hold GET /api/stream open (Server-Sent Events); every agent event or new device
+# bumps this counter and wakes them, so they refresh at once instead of on their next poll.
+_live = {"seq": 0}
+_live_cv = threading.Condition()
+
+
+def notify():
+    with _live_cv:
+        _live["seq"] += 1
+        _live_cv.notify_all()
+
+
 def add_event(body):
     def s(k, n=200):
         v = body.get(k)
@@ -384,6 +398,7 @@ def add_event(body):
         c.execute("INSERT INTO events(device, agent, session, event, tool, summary, cwd, ts) VALUES (?,?,?,?,?,?,?,?)",
                   (s("device", 60), s("agent", 40), s("session", 80), s("event", 40), s("tool", 60),
                    s("summary", 200), s("cwd", 200), now()))
+    notify()
 
 
 AGENT_NAMES = {"claude-code": "Claude Code", "opencode": "OpenCode", "copilot": "Copilot CLI",
@@ -701,6 +716,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(200, {"tasks": tasks_for(device)})
         if path.startswith("/api/tasks/"):
             return self._json(200, task(path.rsplit("/", 1)[1]))
+        if path == "/api/stream":
+            return self._stream()
         if path == "/api/agents":
             return self._json(200, {"sessions": agent_sessions()})
         if path == "/api/file":
@@ -770,6 +787,26 @@ class Handler(BaseHTTPRequestHandler):
             c.execute("UPDATE tasks SET status='ready', note=?, updated=? WHERE id=?",
                       ("Received the current file from %s." % t["src_device"], now(), t["id"]))
         self._json(200, task(t["id"]))
+
+    def _stream(self):
+        """Server-Sent Events: "data: <n>" whenever something changes, a comment every 15 s to keep
+        the connection alive. EventSource can't send headers, so the token comes as ?token=."""
+        self.close_connection = True
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Accel-Buffering", "no")
+        self.end_headers()
+        seen = _live["seq"]
+        self.wfile.write(b"retry: 3000\ndata: %d\n\n" % seen)
+        self.wfile.flush()
+        while True:
+            with _live_cv:
+                _live_cv.wait_for(lambda: _live["seq"] != seen, timeout=15)
+                cur = _live["seq"]
+            self.wfile.write(b"data: %d\n\n" % cur if cur != seen else b": keep-alive\n\n")
+            self.wfile.flush()
+            seen = cur
 
     def _join(self, name):
         if name in JOIN_SCRIPTS:
